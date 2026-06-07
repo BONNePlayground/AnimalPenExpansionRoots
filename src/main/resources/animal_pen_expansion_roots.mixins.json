@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "lv.id.bonne.animalpen.expansion.roots.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "SproutEntityAccessor"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
