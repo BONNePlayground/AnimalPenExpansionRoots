@@ -169,6 +169,7 @@ idea {
 
 // ─── Datapack generation ────────────────────────────────────────────────────
 
+
 tasks.register("generateDatapack", Zip) {
     group       = "mod"
     description = "Assembles a standalone datapack from the mod's data-driven files."
@@ -182,15 +183,25 @@ tasks.register("generateDatapack", Zip) {
 }
 """.stripIndent().strip()
 
+    // Declare the meta dir as a provider — resolved lazily, no doFirst needed
+    def metaDir = layout.buildDirectory.dir("tmp/datapack-meta")
+
+    // Write the file using a task input property so it's cache-safe
+    inputs.property("mcmeta", mcmeta)
+
+    doFirst {
+        def dir = metaDir.get().asFile
+        dir.mkdirs()
+        new File(dir, "pack.mcmeta").text = mcmeta
+    }
+
     from("src/generated/resources") {
         include "data/**"
     }
 
-    doFirst {
-        def metaDir = layout.buildDirectory.dir("tmp/datapack-meta").get().asFile
-        metaDir.mkdirs()
-        new File(metaDir, "pack.mcmeta").text = mcmeta
-        from(metaDir)
+    // Wire the provider directly — Gradle resolves it at execution time
+    from(metaDir) {
+        include "pack.mcmeta"
     }
 
     archiveFileName      = "${mod_id}-datapack-${mod_version}.zip"
